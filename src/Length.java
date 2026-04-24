@@ -1,5 +1,3 @@
-
-
 import java.util.Objects;
 
 public class Length {
@@ -39,13 +37,13 @@ public class Length {
         return unit;
     }
 
-    private double convertToBaseUnit() {
-        return Math.round(value * unit.getFactor() * 100.0) / 100.0;
+    private double toBase() {
+        return value * unit.getFactor();
     }
 
     private boolean compare(Length that) {
         double epsilon = 1e-6;
-        return Math.abs(this.convertToBaseUnit() - that.convertToBaseUnit()) < epsilon;
+        return Math.abs(this.toBase() - that.toBase()) < epsilon;
     }
 
     @Override
@@ -58,15 +56,27 @@ public class Length {
 
     @Override
     public int hashCode() {
-        return Objects.hash(Math.round(convertToBaseUnit() * 1000));
+        return Objects.hash(Math.round(toBase() * 1000));
     }
 
     public Length convertTo(LengthUnit targetUnit) {
         if (targetUnit == null) throw new IllegalArgumentException();
-        double base = convertToBaseUnit();
+        double base = toBase();
         double converted = base / targetUnit.getFactor();
         converted = Math.round(converted * 100.0) / 100.0;
         return new Length(converted, targetUnit);
+    }
+
+    private double fromBase(double base, LengthUnit targetUnit) {
+        double result = base / targetUnit.getFactor();
+        return Math.round(result * 100.0) / 100.0;
+    }
+
+    public Length add(Length that) {
+        if (that == null) throw new IllegalArgumentException();
+        double sumBase = this.toBase() + that.toBase();
+        double result = fromBase(sumBase, this.unit);
+        return new Length(result, this.unit);
     }
 
     @Override

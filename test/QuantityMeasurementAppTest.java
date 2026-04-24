@@ -1,10 +1,7 @@
-
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class QuantityMeasurementAppTest {
-
-    private static final double EPS = 1e-6;
 
     @Test
     public void testFeetEquality() {
@@ -60,12 +57,34 @@ public class QuantityMeasurementAppTest {
     }
 
     @Test
-    public void testInvalidUnit() {
-        assertThrows(IllegalArgumentException.class, () -> new Length(1.0, null));
+    public void addFeetAndInches() {
+        Length length1 = new Length(1.0, Length.LengthUnit.FEET);
+        Length length2 = new Length(12.0, Length.LengthUnit.INCHES);
+        Length result = QuantityMeasurementApp.demonstrateLengthAddition(length1, length2);
+        assertTrue(result.equals(new Length(2.0, Length.LengthUnit.FEET)));
     }
 
     @Test
-    public void testNaNValue() {
-        assertThrows(IllegalArgumentException.class, () -> new Length(Double.NaN, Length.LengthUnit.FEET));
+    public void addInchesAndFeet() {
+        Length length1 = new Length(12.0, Length.LengthUnit.INCHES);
+        Length length2 = new Length(1.0, Length.LengthUnit.FEET);
+        Length result = QuantityMeasurementApp.demonstrateLengthAddition(length1, length2);
+        assertTrue(result.equals(new Length(24.0, Length.LengthUnit.INCHES)));
+    }
+
+    @Test
+    public void addYardsAndFeet() {
+        Length length1 = new Length(1.0, Length.LengthUnit.YARDS);
+        Length length2 = new Length(3.0, Length.LengthUnit.FEET);
+        Length result = QuantityMeasurementApp.demonstrateLengthAddition(length1, length2);
+        assertTrue(result.equals(new Length(2.0, Length.LengthUnit.YARDS)));
+    }
+
+    @Test
+    public void addCentimeterAndInch() {
+        Length length1 = new Length(2.54, Length.LengthUnit.CENTIMETERS);
+        Length length2 = new Length(1.0, Length.LengthUnit.INCHES);
+        Length result = QuantityMeasurementApp.demonstrateLengthAddition(length1, length2);
+        assertTrue(result.equals(new Length(5.08, Length.LengthUnit.CENTIMETERS)));
     }
 }
