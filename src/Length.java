@@ -79,6 +79,13 @@ public class Length {
         return new Length(result, this.unit);
     }
 
+    public Length add(Length that, LengthUnit targetUnit) {
+        if (that == null || targetUnit == null) throw new IllegalArgumentException();
+        double sumBase = this.toBase() + that.toBase();
+        double result = fromBase(sumBase, targetUnit);
+        return new Length(result, targetUnit);
+    }
+
     @Override
     public String toString() {
         return String.format("%.2f %s", value, unit);
