@@ -1,49 +1,25 @@
-import java.util.Objects;
-
 public class Length {
-
-    private final double value;
-    private final LengthUnit unit;
-
-    public enum LengthUnit {
-        INCHES(1.0),
-        FEET(12.0),
-        YARDS(36.0),
-        CENTIMETERS(0.393701);
-
-        private final double factor;
-
-        LengthUnit(double factor) {
-            this.factor = factor;
-        }
-
-        public double getFactor() {
-            return factor;
-        }
-    }
+    private double value;
+    private LengthUnit unit;
 
     public Length(double value, LengthUnit unit) {
-        if (!Double.isFinite(value)) throw new IllegalArgumentException();
-        if (unit == null) throw new IllegalArgumentException();
+        if (unit == null || !Double.isFinite(value)) {
+            throw new IllegalArgumentException();
+        }
         this.value = value;
         this.unit = unit;
     }
 
-    public double getValue() {
-        return value;
+    private double convertToBaseUnit() {
+        return unit.convertToBaseUnit(value);
     }
 
-    public LengthUnit getUnit() {
-        return unit;
+    private double convertFromBaseToTargetUnit(double baseValue, LengthUnit targetUnit) {
+        return targetUnit.convertFromBaseUnit(baseValue);
     }
 
-    private double toBase() {
-        return value * unit.getFactor();
-    }
-
-    private boolean compare(Length that) {
-        double epsilon = 1e-6;
-        return Math.abs(this.toBase() - that.toBase()) < epsilon;
+    private boolean compare(Length thatLength) {
+        return Math.abs(this.convertToBaseUnit() - thatLength.convertToBaseUnit()) < 0.01;
     }
 
     @Override
@@ -54,35 +30,27 @@ public class Length {
         return compare(that);
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(Math.round(toBase() * 1000));
-    }
-
     public Length convertTo(LengthUnit targetUnit) {
         if (targetUnit == null) throw new IllegalArgumentException();
-        double base = toBase();
-        double converted = base / targetUnit.getFactor();
-        converted = Math.round(converted * 100.0) / 100.0;
+        double base = convertToBaseUnit();
+        double converted = convertFromBaseToTargetUnit(base, targetUnit);
         return new Length(converted, targetUnit);
     }
 
-    private double fromBase(double base, LengthUnit targetUnit) {
-        double result = base / targetUnit.getFactor();
-        return Math.round(result * 100.0) / 100.0;
+    public Length add(Length thatLength) {
+        return addAndConvert(thatLength, this.unit);
     }
 
-    public Length add(Length that) {
-        if (that == null) throw new IllegalArgumentException();
-        double sumBase = this.toBase() + that.toBase();
-        double result = fromBase(sumBase, this.unit);
-        return new Length(result, this.unit);
+    public Length add(Length thatLength, LengthUnit targetUnit) {
+        if (targetUnit == null) throw new IllegalArgumentException();
+        return addAndConvert(thatLength, targetUnit);
     }
 
-    public Length add(Length that, LengthUnit targetUnit) {
-        if (that == null || targetUnit == null) throw new IllegalArgumentException();
-        double sumBase = this.toBase() + that.toBase();
-        double result = fromBase(sumBase, targetUnit);
+    private Length addAndConvert(Length length, LengthUnit targetUnit) {
+        double base1 = this.convertToBaseUnit();
+        double base2 = length.convertToBaseUnit();
+        double sum = base1 + base2;
+        double result = convertFromBaseToTargetUnit(sum, targetUnit);
         return new Length(result, targetUnit);
     }
 
