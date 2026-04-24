@@ -19,11 +19,20 @@ public class QuantityMeasurementApp {
         return length.convertTo(toUnit);
     }
 
+    public static Length demonstrateLengthAddition(Length l1, Length l2) {
+        return l1.add(l2);
+    }
+
     public static void main(String[] args) {
         System.out.println(demonstrateLengthConversion(1.0, Length.LengthUnit.FEET, Length.LengthUnit.INCHES));
         System.out.println(demonstrateLengthConversion(3.0, Length.LengthUnit.YARDS, Length.LengthUnit.FEET));
         System.out.println(demonstrateLengthConversion(36.0, Length.LengthUnit.INCHES, Length.LengthUnit.YARDS));
         System.out.println(demonstrateLengthConversion(1.0, Length.LengthUnit.CENTIMETERS, Length.LengthUnit.INCHES));
         System.out.println(demonstrateLengthConversion(0.0, Length.LengthUnit.FEET, Length.LengthUnit.INCHES));
+
+        System.out.println(demonstrateLengthAddition(
+                new Length(1.0, Length.LengthUnit.FEET),
+                new Length(12.0, Length.LengthUnit.INCHES)
+        ));
     }
 }
